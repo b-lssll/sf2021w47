@@ -1,3 +1,15 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+    path: /
+    controller: App\Controller\DefaultController::index
+exo1:
+    path: /demo/{name}
+    controller: App\Controller\DefaultController::exo1
+    requirements:
+        name: '[A-Z][a-z][0,12]' # Commence par une majuscule, fin minuscule, min 0
+    defaults:
+        name: 'Everybody'
+exo2:
+    path: /http-messages
+    controller: App\Controller\DefaultController::httpMessage
+
+
