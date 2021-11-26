@@ -7,9 +7,9 @@ use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use function Sodium\add;
 
 class PostController extends AbstractController
 {
@@ -43,7 +43,7 @@ class PostController extends AbstractController
     /**
      * @Route("/new")
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $post = new Post();
         $form = $this->createFormBuilder($post)
@@ -56,6 +56,8 @@ class PostController extends AbstractController
             ])
             ->getForm()
             ;
+
+        $form->handleRequest($request);
 
         return $this->renderForm('post/create.html.twig', [
             'create_form' => $form,
