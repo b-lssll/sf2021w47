@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Repository\PostRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -43,7 +44,7 @@ class PostController extends AbstractController
     /**
      * @Route("/new")
      */
-    public function create(Request $request): Response
+    public function create(Request $request, EntityManagerInterface $manager): Response
     {
         $post = new Post();
         $form = $this->createFormBuilder($post)
@@ -53,11 +54,20 @@ class PostController extends AbstractController
             ])
             ->add('createdAt', DateTimeType::class, [
                 'widget' => 'single_text',
+                'input' => 'datetime_immutable',
             ])
             ->getForm()
             ;
 
         $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $manager->persist($post);
+            $manager->flush();
+
+            return $this->redirectToRoute('app_post_show', ['id' =>$post->getId()], Response::HTTP_SEE_OTHER);
+        }
 
         return $this->renderForm('post/create.html.twig', [
             'create_form' => $form,
