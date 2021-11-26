@@ -9,6 +9,9 @@
         {# Run `composer require symfony/webpack-encore-bundle`
            and uncomment the following Encore helpers to start using Symfony UX #}
         {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/form.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/flash.css') }}">
             {#{{ encore_entry_link_tags('app') }}#}
         {% endblock %}
 
@@ -17,14 +20,14 @@
         {% endblock %}
     </head>
     <body>
-    {# read and display all flash messages #}
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="flash-{{ label }}">
-                {{ message }}
-            </div>
+        {# read and display all flash messages #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flash flash-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
         {% block body %}{% endblock %}
     </body>
 </html>

@@ -4,13 +4,11 @@
 
 {% block body %}
 <h1>{{ post.title }}</h1>
-<p>Publié le : {{ post.createdAt | date('d-m-Y') }}</p>
+<p>Publié le: {{ post.createdAt | date('d/m/Y') }}</p>
 <div class="post-body">
     {{ post.body | nl2br }}
 </div>
-<a>
-    <a href="{{ path('app_post_homepage') }}"</a>
+<p>
+    <a href="{{ path('app_post_homepage') }}">Retour à l'accueil</a>
 </p>
 {% endblock %}
-
-

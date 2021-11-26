@@ -8,23 +8,24 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PostController extends AbstractController
 {
-
     const MAX_POSTS_PER_PAGE = 10;
+
     /**
      * @Route("/")
      */
     public function homepage(PostRepository $repository): Response
     {
-        $posts = $repository->findBy([],['createAt' => 'DESC'], self::MAX_POSTS_PER_PAGE);
+        $posts = $repository->findBy([], ['createdAt' => 'DESC'], self::MAX_POSTS_PER_PAGE);
 
-        return $this->render('post/index.html.twig', [
-            'title' => 'Bienvenue sur mon blog !',
+        return $this->render('post/homepage.html.twig', [
+            'title' => 'Bienvenue sur mon blog!',
             'posts' => $posts,
         ]);
     }
@@ -48,26 +49,24 @@ class PostController extends AbstractController
     {
         $post = new Post();
         $form = $this->createFormBuilder($post)
-            ->add('title')
-            ->add('body', TextareaType::class, [
-                'attr' => ['cols' => 60, 'rows' => 10],
+            ->add('title', TextType::class, [
+                'help' => 'Pas plus long que 60 caractères',
             ])
-            ->add('createdAt', DateTimeType::class, [
-                'widget' => 'single_text',
-                'input' => 'datetime_immutable',
+            ->add('body', TextareaType::class, [
+                'attr' => [ 'cols' => 60, 'rows' => 10 ],
+                'help' => 'Écrivez un contenu suffisamment long (10).',
             ])
             ->getForm()
-            ;
+        ;
 
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $manager->persist($post);
             $manager->flush();
             $this->addFlash('notice', 'Votre publication a bien été enregistrée');
 
-            return $this->redirectToRoute('app_post_show', ['id' =>$post->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_post_show', ['id' => $post->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('post/create.html.twig', [
