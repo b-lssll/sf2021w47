@@ -36,6 +36,11 @@ class PostController extends AbstractController
     {
         $post = $repository->find($id);
 
+        if (!$post)
+        {
+            throw $this->createNotFoundException();
+        }
+
         return $this->render('post/show.html.twig', [
             'post' => $post,
         ]);
