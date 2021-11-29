@@ -88,7 +88,7 @@ class PostController extends AbstractController
     public function delete(Post $post, Request $request, EntityManagerInterface $manager): Response
     {
         $form = $this->createFormBuilder(null, [
-            'methods' => 'DELETE',
+            'method' => 'DELETE',
         ])->getForm();
 
         $form->handleRequest($request);
