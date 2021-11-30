@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Form\PostType;
+use App\Repository\AuthorRepository;
 use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,13 +44,22 @@ class PostController extends AbstractController
     /**
      * @Route("/new", methods={"GET", "POST"})
      */
-    public function create(Request $request, EntityManagerInterface $manager): Response
+    public function create(Request $request, AuthorRepository $authorRepository, EntityManagerInterface $manager): Response
     {
-        $post = new Post();
+        $author = null;
+        if ($user = $this->getUser())
+        {
+            $author = $authorRepository->findOneBy(['authenticatedAs' => $user]);
+        }
+
+        $post = (new Post())
+                ->setWrittenBy($author)
+        ;
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid())
+        {
             $manager->persist($post);
             $manager->flush();
             $this->addFlash('notice', 'Votre publication a bien été enregistrée');
@@ -72,7 +82,8 @@ class PostController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid())
+        {
             $manager->flush();
             $this->addFlash('notice', 'Votre publication a bien été modifiée');
 
@@ -102,7 +113,8 @@ class PostController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid())
+        {
             $manager->remove($post);
             $manager->flush();
             $this->addFlash('notice', 'Votre publication a bien été supprimée');
